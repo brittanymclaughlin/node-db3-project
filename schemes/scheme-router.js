@@ -51,7 +51,12 @@ router.post('/', (req, res) => {
 
   Schemes.add(schemeData)
   .then(scheme => {
-    res.status(201).json(scheme);
+    Schemes.findById(scheme)
+    .then(results=>{
+      let [flatten] = results;
+       res.status(201).json(flatten);
+    })
+   
   })
   .catch (err => {
     res.status(500).json({ message: 'Failed to create new scheme' });
@@ -67,7 +72,11 @@ router.post('/:id/steps', (req, res) => {
     if (scheme) {
       Schemes.addStep(stepData, id)
       .then(step => {
-        res.status(201).json(step);
+        Schemes.findSteps(id)
+        .then(results=>{
+          res.status(201).json(results);
+        })
+       
       })
     } else {
       res.status(404).json({ message: 'Could not find scheme with given id.' })
@@ -87,7 +96,12 @@ router.put('/:id', (req, res) => {
     if (scheme) {
       Schemes.update(changes, id)
       .then(updatedScheme => {
-        res.json(updatedScheme);
+        Schemes.findById(id)
+        .then(results=>{
+          const [flat] = results;
+          res.json(flat);
+        })
+        
       });
     } else {
       res.status(404).json({ message: 'Could not find scheme with given id' });
@@ -104,7 +118,7 @@ router.delete('/:id', (req, res) => {
   Schemes.remove(id)
   .then(deleted => {
     if (deleted) {
-      res.json({ removed: deleted });
+      res.json({message: 'Your evil scheme has been deleted'});
     } else {
       res.status(404).json({ message: 'Could not find scheme with given id' });
     }
